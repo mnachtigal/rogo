@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyA2COy-qMdrws92Vw-vosguzna4vRc75QE"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
+
+		<%= stylesheet_link_tag    "application" %>
+		<%= javascript_include_tag "application", 'data-turbolinks-track' => true %>
+		<%= csrf_meta_tags %>
+	</head>
+
+	<body onload="main()">
+		<!-- renders the generated header -->
+		<% #= render 'layouts/header' %>
+		<%= yield %>
+		<%= javascript_include_tag "application" %>
+	</body>
+</html>

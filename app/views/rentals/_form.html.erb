@@ -1,0 +1,58 @@
+<%= form_for @rental, html: {multipart: true } do |f| %>
+  <% if @rental.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@rental.errors.count, "error") %> prohibited this rental from being saved:</h2>
+
+      <ul>
+      <% @rental.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.text_field :rental_listing, placeholder: "What's for Rent?" %>
+  </div>
+  <div class="field">
+    <%= f.text_field :addr_street_name, placeholder: "Street Name" %>
+  </div>
+  <div class="field">
+    <%= f.number_field :addr_street_num, placeholder: "Street Number" %>
+  </div>
+  <div class="field">
+    <%= f.number_field :addr_zip, placeholder: "Zipcode" %>
+  </div>
+  <div class="field">
+    <%= f.text_field :addr_city, placeholder: "City" %>
+  </div>
+  <div class="field">
+    <%= f.text_field :addr_state, placeholder: "State" %>
+  </div>
+  <div class="field">
+    <%= f.text_field :addr_country, placeholder: "Country" %>
+  </div>
+  <div class="field">
+    <%=f.text_field :phone_number, placeholder: "Phone Number" %>
+  </div>
+
+  <div class="field">
+    <%= f.text_field :dets_description, placeholder: "Description" %>
+  </div>
+
+
+  <div id="files">
+    <h3> Attach Rental Images </h3>
+    <!-- this is using html 5 magic to gather multiple images to pass to paperclip in the controler -->
+    <%= file_field_tag "pics[]", type: :file, multiple: true %>
+  </div>
+  <div>
+    <output id="list"> </output>
+    <div id="name"> This is the name of the file selected </div>
+  </div>
+  <br>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

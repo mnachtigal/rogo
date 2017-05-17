@@ -1,0 +1,161 @@
+<!-- LOGIN Modal -->
+<div class="reveal" id="login_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+   <p class="lead" id="render_add_rental">
+   <%= render 'devise/sessions/new' %>
+   </p>
+   <button class="close-button" data-close aria-label="Close modal" type="button">
+      <span aria-hidden="true">&times;</span>
+   </button>
+</div>
+<!-- SIGNUP Modal -->
+<div class="reveal" id="signup_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+   <p class="lead" id="render_add_rental">
+   <%= render 'devise/registrations/new' %>
+   </p>
+   <button class="close-button" data-close aria-label="Close modal" type="button">
+      <span aria-hidden="true">&times;</span>
+   </button>
+</div>
+<!-- ADD Modal -->
+<div class="reveal" id="add_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+   <h3>Add a Rental</h3>
+   <p class="lead" id="render_add_rental">
+   <%= render 'rentals/form' %>
+   </p>
+   <button class="close-button" data-close aria-label="Close modal" type="button">
+      <span aria-hidden="true">&times;</span>
+   </button>
+</div>
+<!-- TOP BAR -->
+<div id="top_bar" data-sticky-container>
+   <div id="top_bar"class="title-bar" data-sticky data-options="marginBottom:0;" style="width:100%" data-top-anchor="1" data-btm-anchor="content:bottom">
+     <div id="logo" class="title-bar-left" data-turbolinks="false">
+       <%= link_to (image_tag (root_url + "/images/Rogo.png"), alt: "ROGO_logo"), rentals_path, :style=>'background:#000000' %>
+     </div>
+      <div id="right_header" class="title-bar-right">
+         <% if !user_signed_in? %>
+            <a id="login_button" data-open="signup_modal">SIGNUP</a>
+            <a id="add_button" data-open="login_modal">LOGIN</a> &nbsp;
+         <% else %>
+            <%= link_to "LOGOUT", destroy_user_session_path,:style=>'color: white; background:#3333E1;', method: :delete, class: 'login_button' %>
+            <a id="add_button" data-open="add_modal">ADD</a>
+         <% end %>
+      </div>
+   </div>
+</div>
+<br>
+<br>
+
+<!-- SEARCH BAR -->
+<div id="search_back">
+   <div id="search_bar" class="row">
+      <div id="search_bar" class="small-12 small-center columns">
+         <%= form_for_filterrific @filterrific, :url => search_show_path do |f| %>
+            <div>
+               <div class="index_query_bar">
+                  <%# give the search field the 'filterrific-periodically-observed' class for live updates %>
+                  <%= f.text_field(:search_query, class: 'filterrific-periodically-observed') %>
+               </div>
+               <div class="text-center">
+                  <%= f.submit 'Search', :class=>"search_button" %>
+               </div>
+            </div>
+         <% end %>
+      </div>
+   </div>
+</div>
+<!-- used for debugging which user is logged on -->
+<% #if user_signed_in? %>
+<% #= current_user.email %>
+<% #end %>
+<!-- Calculates the top rentals by overall rating -->
+<% @top_rentals = Rental.all %>
+<% @top_rentals.each do |r| %>
+   <% @avg = r.get_overall %>
+   <% @top_rentals = @top_rentals.sort_by { |a| a.get_overall } %>
+<% end %>
+
+<!-- RENTAL LISTINGS -->
+<div id="rental_listings_div">
+   <br>
+   <!-- used to keep track of how many rentals have been displayed -->
+   <% @counter = 0 %>
+   <% @top_rentals.reverse_each do |rental| %>
+      <% if @counter == 10 %>
+         <!-- break when count reaches 5 -->
+         <% break %>
+      <% end %>
+      <% @counter += 1 %>
+      <!-- <div id="rental_div"> -->
+         <%= link_to rental do %>
+            <div id="rental_content">
+               <div id="rental_image" data-turbolinks="false">
+                  <% rental.images.each do |image| %>
+                     <% if image.default == true %>
+                        <%= image_tag(image.pic_file_name, :class=>"thumbnail", size:"250") %>
+                     <% end %>
+                    
+                    <% break %>
+                  <% end %>
+               </div>
+               <div id="addr_and_rating_div">
+                  <div id="index_header"><%= rental.rental_listing %> </div>
+                  <div id="index_header2">
+                     <%= rental.dets_description %>
+
+                  </div>
+                  <div id="index_header2">
+                     <%= rental.reviews.count %>
+                     <% if rental.reviews.count == 1 %>
+                        Review
+                     <% else %>
+                        Reviews
+                     <% end %> &nbsp;--&nbsp;
+                     <!-- Calculate the Avg Number of Overall Stars and Price -->
+                     <% @total_price = 0 %>
+                     <% @total_stars = 0 %>
+                     <% @num_reviews = 0 %>
+                     <% rental.reviews.each do |review| %>
+                        <% if !review.new_record? && review.price.present? && review.overall.present? %>
+                           <% @total_price = review.price + @total_price %>
+                           <% @total_stars = review.overall + @total_stars %>
+                           <% @num_reviews = @num_reviews + 1 %>
+                        <% end %>
+                     <% end %>
+                     <% if @num_reviews != 0 %>
+                        <% @avg_price = @total_price / @num_reviews %>
+                        <% @avg_stars = @total_stars / @num_reviews %>
+                     <% end %>
+                     <% case @avg_stars %>
+                     <% when 1 %>
+                        ★
+                     <% when 2 %>
+                        ★★
+                     <% when 3 %>
+                        ★★★
+                     <% when 4 %>
+                        ★★★★
+                     <% when 5 %>
+                        ★★★★★
+                     <% end %> &nbsp;--&nbsp;
+                     <% case @avg_price %>
+                     <% when 1 %>
+                        $
+                     <% when 2 %>
+                        $$
+                     <% when 3 %>
+                        $$$
+                     <% when 4 %>
+                        $$$$
+                     <% when 5 %>
+                        $$$$$
+                     <% end %>
+                  </div>
+
+               </div>
+            </div>
+         <% end %>
+    <!--  </div> -->
+      <br>
+   <% end %>
+</div>

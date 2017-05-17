@@ -1,0 +1,69 @@
+
+<div class="search_show_rentals medium-8 columns">
+
+	<hr>
+	<% if @rentals.present? %>
+		<% @rentals.each do |rental| %>
+			<div>
+				<%= link_to rental do %>
+					<div class="medium-3 columns" data-turbolinks="false">
+						<% rental.images.each do |image| %>
+							<% if image.default == true %>
+								<%= image_tag(image.filename, :class=>"thumbnail", size:"150") %>
+							<% end %>
+						<% end %>
+					</div>
+					<div class="rental_link">
+    						<b><%= rental.rental_listing %></b>
+							<br>
+							<!--
+							Calculate the Avg Number of Overall Stars and Price -->
+							<% @total_price = 0 %>
+							<% @total_stars = 0 %>
+							<% @num_reviews = 0 %>
+							<% rental.reviews.each do |review| %>
+    							<% if !review.new_record? && review.price.present? && review.overall.present? %>
+        							<% @total_price = review.price + @total_price %>
+        							<% @total_stars = review.overall + @total_stars %>
+        							<% @num_reviews = @num_reviews + 1 %>
+    							<% end %>
+							<% end %>
+							<% if @num_reviews != 0 %>
+							  <% @avg_price = @total_price / @num_reviews %>
+							  <% @avg_stars = @total_stars / @num_reviews %>
+							<% end %>
+							<br>
+			                <% case @avg_price %>
+        				        <% when 1 %>
+                   					$
+                				<% when 2 %>
+                    				$$
+                				<% when 3 %>
+                    				$$$
+                				<% when 4 %>
+                    				$$$$
+                				<% when 5 %>
+                    				$$$$$
+                			<% end %>
+			                <% case @avg_stars %>
+            				    <% when 1 %>
+                    				★
+                				<% when 2 %>
+                    				★★
+                				<% when 3 %>
+                    				★★★
+                				<% when 4 %>
+                    				★★★★
+                				<% when 5 %>
+                    				★★★★★
+                			<% end %>
+					</div>
+				<% end %>
+			</div>
+			<hr>
+ 		<% end %>
+	<%= paginate @rentals %>
+	<% else %>
+		<b>There are no rentals containing the term(s) <%= params[:filterrific][:search_query] %> try another address. </b>
+ 	<% end %>
+</div>

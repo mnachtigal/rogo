@@ -1,0 +1,251 @@
+<!-- LOGIN Modal -->
+<div class="reveal" id="login_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <p class="lead" id="render_add_rental">
+    	<%= render 'devise/sessions/new' %>
+    </p>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- SIGNUP Modal -->
+<div class="reveal" id="signup_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <p class="lead" id="render_add_rental">
+    	<%= render 'devise/registrations/new' %>
+    </p>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- ADD Modal -->
+<div class="reveal" id="add_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+	<h3>Edit Rental</h3>
+  	<p class="lead" id="render_add_rental">
+	   <%= render 'rentals/form' %>
+	</p>
+	<button class="close-button" data-close aria-label="Close modal" type="button">
+    	<span aria-hidden="true">&times;</span>
+  	</button>
+</div>
+<!-- TOP BAR -->
+<div id="top_bar" data-sticky-container>
+  <div id="top_bar"class="title-bar" data-sticky data-options="marginBottom:0;" style="width:100%" data-top-anchor="1" data-btm-anchor="content:bottom">
+    <div id="logo" class="title-bar-left" data-turbolinks="false">
+	    <%= link_to (image_tag (root_url + "/images/Rogo.png"), alt: "ROGO_logo"), rentals_path, :style=>'background:#000000' %>
+    </div>
+    <div id="right_header" class="title-bar-right">
+	<% if !user_signed_in? %>
+		<a id="login_button" data-open="signup_modal">SIGNUP</a>
+		<a id="add_button" data-open="login_modal">LOGIN</a> &nbsp;
+	<% else %>
+		<%= link_to "LOGOUT", destroy_user_session_path,:style=>'color: white; background:#3333E1;', method: :delete, class: 'login_button' %>
+    <!-- <a id="add_button" data-open="add_modal">EDIT</a>-->
+	<% end %>
+    </div>
+  </div>
+</div>
+<br><br><br><br>
+<% @total_price = 0 %>
+<% @total_stars = 0 %>
+<% @num_reviews = 0 %>
+<% @rental.reviews.each do |review| %>
+	<% if !review.new_record? && review.price.present? && review.overall.present? %>
+		<% @total_price = review.price + @total_price %>
+		<% @total_stars = review.overall + @total_stars %>
+		<% @num_reviews = @num_reviews + 1 %>
+	<% end %>
+<% end %>
+<% if @num_reviews != 0 %>
+  <% @avg_price = @total_price / @num_reviews %>
+  <% @avg_stars = @total_stars / @num_reviews %>
+<% end %>
+ <!--RENTAL DETAILS -->
+<div class="row">
+	<div class="small-6 columns">
+		<b><h4 align="center"><%= @rental.rental_listing %><br>
+			<!--
+      	<% case @avg_price %>
+				<% when 1 %>
+					$
+				<% when 2 %>
+					$$
+				<% when 3 %>
+					$$$
+				<% when 4 %>
+					$$$$
+				<% when 5 %>
+					$$$$$
+				<% end %> -->
+		</h4></b>
+		<!--<h5 align="center">
+				<% case @avg_stars %>
+				<% when 1 %>
+					★
+				<% when 2 %>
+					★★
+				<% when 3 %>
+					★★★
+				<% when 4 %>
+					★★★★
+				<% when 5 %>
+					★★★★★
+				<% end %>
+		</h2>-->
+	<br>
+
+    <%-# Property Details Start -%>
+
+	<!-- RENTAL IMAGES -->
+	<!-- <div class="small-6 large-centered columns"> -->
+		<div id="owl-carousel" class="owl-carousel">
+			<% @rental.images.each do |image| %>
+				<% if !image.new_record? %>
+					<div class="item">
+						<%= image_tag (root_url + "/images/" + image.pic_file_name) %>
+					</div>
+				<% end %>
+			<% end %>
+		</div>
+	<!-- </div> -->
+</div>
+<div class="small-6 columns">
+  <b><h4 align="center">Description<br>
+    <p> <%= @rental.dets_description %> </p>
+    <b><h4 align="center">Contact<br>
+        <p><%= @rental.phone_number %>
+
+        </p>
+</div>
+<% if user_signed_in? %>
+<%= link_to 'Edit', edit_rental_path(@rental) %>
+<%= link_to 'Destroy', @rental, method: :delete, data: { confirm: 'Are you sure?' } %>
+<%end%>
+</div>
+<!-- DIRECTIONS FROM RENTAL TO CSUC -->
+<div class="row g_maps">
+	<div style='width: 100%;'>
+	  	<div id="directions" style='width: 100%; height: 400px;'></div>
+  	</div>
+        <script type="text/javascript">
+	      // OPTION FOR ONE POINT (the rental)
+	     /*var handler = Gmaps.build('Google');
+	      handler.buildMap({ internal: {id: 'multi_markers'}}, function(){
+		    var markers = handler.addMarkers([
+			    { lat: <%= @rental.latitude%>, lng: <%=@rental.longitude%>},
+		    ]);
+		    handler.bounds.extendWith(markers);
+		    handler.fitMapToBounds();
+		    handler.getMap().setZoom(16);
+      });*/
+		var directionsDisplay = new google.maps.DirectionsRenderer();
+		var directionsService = new google.maps.DirectionsService();
+         	function calcRoute() {
+		  var origin = new google.maps.LatLng(<%= @rental.latitude %>, <%= @rental.longitude %>);
+       	          var destination = new google.maps.LatLng(39.727900, -121.844173);
+
+		  var request = {
+		      origin:      origin,
+		      destination: destination,
+		      travelMode:  google.maps.TravelMode.WALKING
+		 };
+		 directionsService.route(request, function(response, status) {
+		    if (status == google.maps.DirectionsStatus.OK) {
+		      directionsDisplay.setDirections(response);
+		    }
+		  });
+		}
+
+	       calcRoute();
+	       var handler = Gmaps.build('Google');
+	       handler.buildMap({ provider: { scrollwheel: false }, internal: {id: 'directions'}}, function(){
+	         directionsDisplay.setMap(handler.getMap());
+	       });
+        </script>
+	<br>
+	</div>
+</div>
+
+<div id="review_title">
+	<b><h2 align="center"> Reviews </h2></b>
+</div>
+<br>
+<!-- WRITE A REVIEW -->
+<% if user_signed_in? %>
+	<div class="row">
+		<ul class="accordion" data-accordion data-multi-expand="true" data-allow-all-closed="true">
+		<li id="accordion_review" class="accordion-item" data-accordion-item>
+			<a href="#" class="accordion-title">Write a review</a>
+			<div class="accordion-content" data-tab-content>
+				<%= render 'reviews/form' %>
+			</div>
+		</li>
+		</ul>
+	</div>
+<% end %>
+<!-- REVIEWS -->
+<% @rental.reviews.reverse_each do |review| %>
+	<% if review.overall.present? %>
+		<div class="row">
+		 <ul class="accordion" data-accordion data-multi-expand="true" data-allow-all-closed="true">
+	  	<li id="accordion_review"class="accordion-item" data-accordion-item>
+	    	<a href="#" class="accordion-title"><%= review.overall %> out of 5 stars</a>
+	    	<div class="accordion-content" data-tab-content>
+			<div id="review_div">
+	      		<% if !review.new_record? %>
+					<div id ="ratings_div">
+						<div id="rating_box">
+						<!--	<div id="rating_num">  <!- <%= review.overall %> -->
+                <% case review.overall %>
+                <% when 1 %>
+                  ★
+                <% when 2 %>
+                  ★★
+                <% when 3 %>
+                  ★★★
+                <% when 4 %>
+                  ★★★★
+                <% when 5 %>
+                  ★★★★★
+                <% end %>
+            <!--  </div> -->
+							<div id="rating_title"> Overall:</div>
+						</div>
+            <br><br>
+
+						<div id="rating_box">
+					<!--		<div id="rating_num"> <!- <%= review.price %> -->
+                <% case review.price %>
+                <% when 1 %>
+                  $
+                <% when 2 %>
+                  $$
+                <% when 3 %>
+                  $$$
+                <% when 4 %>
+                  $$$$
+                <% when 5 %>
+                  $$$$$
+                <% end %>
+            <!--  </div> -->
+							<div id="rating_title"> Price:</div>
+						</div>
+					</div>
+					 <div id="rating_comment"style="vertical-align:top;margin-left:30px;" >
+						<p> <blockquote>
+							<i id="comment_heading">Review:</i><br>
+							<div id="actual_comment"><%=review.comment%></div>
+						</blockquote> </p>
+					</div>
+					<br>
+
+					  <%= link_to 'Edit', edit_review_path(review) %>
+					  <%= link_to 'Destroy', review, method: :delete, data: { confirm: 'Are you sure?' } %>
+
+				</div>
+		</li>
+		</div>
+			<% end %>
+	   	</div>
+		</ul>
+	<% end %>
+
+<% end %>

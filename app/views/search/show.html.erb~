@@ -1,0 +1,56 @@
+<!-- LOGIN Modal -->
+<div class="reveal" id="login_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <p class="lead" id="render_add_rental">
+    	<%= render 'devise/sessions/new' %>
+    </p>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- SIGNUP Modal -->
+<div class="reveal" id="signup_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <p class="lead" id="render_add_rental">
+    	<%= render 'devise/registrations/new' %>
+    </p>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- ADD Modal -->
+<div class="reveal" id="add_modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+	<h3>Add a Rental</h3>
+  	<p class="lead" id="render_add_rental">
+	   <%= render 'rentals/form' %>
+	</p>
+	<button class="close-button" data-close aria-label="Close modal" type="button">
+    	<span aria-hidden="true">&times;</span>
+  	</button>
+</div>
+<!-- STICKY NAV BAR -->
+<div id="top_bar" data-sticky-container>
+  <div id="top_bar"class="title-bar" data-sticky data-options="marginBottom:0;" style="width:100%" data-top-anchor="1" data-btm-anchor="content:bottom">
+
+
+    <div id="right_header" class="title-bar-right">
+	<% if !user_signed_in? %>
+        <a id="login_button" data-open="signup_modal">SIGNUP</a>
+        <a id="add_button" data-open="login_modal">LOGIN</a> &nbsp;
+	<% else %>
+		<%= link_to "LOGOUT", destroy_user_session_path, :style=>'color:white; background:#3333E1;', method: :delete, class: 'login_button' %>
+    		<a id="add_button" data-open="add_modal">ADD</a>
+	<% end %>
+    </div>
+  </div>
+</div>
+<br>
+<div id="search_body">
+<div class="medium-2 columns">
+	<fieldset class="fieldset">
+
+</div>
+
+<%= render(
+  partial: 'search/list',
+  locals: { rentals: @rentals }
+) %>
+</div>

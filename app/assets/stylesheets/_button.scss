@@ -1,0 +1,9 @@
+@import 'settings';
+
+@mixin button-size($size: medium, $expand: false) {
+  font-size: map-get($button-sizes, $size);
+
+  @if $expand {
+    @include button-expand;
+  }
+}

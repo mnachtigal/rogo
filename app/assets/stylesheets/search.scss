@@ -1,0 +1,59 @@
+// Place all the styles related to the search controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+@import 'settings';
+@import 'foundation';
+@import 'button';
+
+#search_body {
+	margin-top: 30px;
+}
+
+.verticalLine {
+    border-right:  solid 1px #3333E1;
+}
+
+.search_show_rentals {
+	padding-right: 18%;
+	width: 80%;
+}
+
+.test_border {
+	border: solid blue;
+	width: 100%;
+}
+
+.index_query_bar {
+	float: left;
+        padding-right: 2%;
+	padding-left: 10%;
+	width: 83%;
+}
+
+.query_bar {
+	float: left;
+        padding-right: 2%;
+	padding-left: 5%;
+	width: 80%;
+}
+
+.search_button{
+	float: left;
+        max-width: 20%;
+	// height: 38.5px;
+	@include button();
+	@include button-style(#3333E1, auto, auto);
+
+}
+
+.sumbit_link {
+	background:none!important;
+	border:none;
+	padding:0!important;
+	font: inherit;
+	cursor: pointer;
+	color: red;
+}
+.rental_link {
+	color: #888888;
+}

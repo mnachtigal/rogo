@@ -1,0 +1,84 @@
+<div id="top_bar" data-sticky-container>
+   <div id="top_bar"class="title-bar" data-sticky data-options="marginBottom:0;" style="width:100%" data-top-anchor="1" data-btm-anchor="content:bottom">
+     <div id="logo" class="title-bar-left" data-turbolinks="false">
+       <%= link_to (image_tag (root_url + "/images/Rogo.png"), alt: "ROGO_logo"), rentals_path, :style=>'background:#000000' %>
+     </div>
+      <div id="right_header" class="title-bar-right">
+         <% if !user_signed_in? %>
+            <a id="login_button" data-open="signup_modal">SIGNUP</a>
+            <a id="add_button" data-open="login_modal">LOGIN</a> &nbsp;
+         <% else %>
+            <%= link_to "LOGOUT", destroy_user_session_path,:style=>'color: white; background:#3333E1;', method: :delete, class: 'login_button' %>
+            <a id="add_button" data-open="add_modal">ADD</a>
+         <% end %>
+      </div>
+   </div>
+</div>
+<div class="search_show_rentals medium-8 columns">
+
+	<hr>
+	<% if @rentals.present? %>
+		<% @rentals.each do |rental| %>
+			<div>
+				<%= link_to rental do %>
+					<div class="medium-3 columns" data-turbolinks="false">
+						<% rental.images.each do |image| %>
+							<% if image.default == true %>
+								<%= image_tag(image.pic_file_name, :class=>"thumbnail", size:"150") %>
+							<% end %>
+						<% end %>
+					</div>
+					<div class="rental_link">
+    						<b><%= rental.rental_listing %></b>
+							<br>
+							<!--
+							Calculate the Avg Number of Overall Stars and Price -->
+							<% @total_price = 0 %>
+							<% @total_stars = 0 %>
+							<% @num_reviews = 0 %>
+							<% rental.reviews.each do |review| %>
+    							<% if !review.new_record? && review.price.present? && review.overall.present? %>
+        							<% @total_price = review.price + @total_price %>
+        							<% @total_stars = review.overall + @total_stars %>
+        							<% @num_reviews = @num_reviews + 1 %>
+    							<% end %>
+							<% end %>
+							<% if @num_reviews != 0 %>
+							  <% @avg_price = @total_price / @num_reviews %>
+							  <% @avg_stars = @total_stars / @num_reviews %>
+							<% end %>
+							<br>
+			                <% case @avg_price %>
+        				        <% when 1 %>
+                   					$
+                				<% when 2 %>
+                    				$$
+                				<% when 3 %>
+                    				$$$
+                				<% when 4 %>
+                    				$$$$
+                				<% when 5 %>
+                    				$$$$$
+                			<% end %>
+			                <% case @avg_stars %>
+            				    <% when 1 %>
+                    				★
+                				<% when 2 %>
+                    				★★
+                				<% when 3 %>
+                    				★★★
+                				<% when 4 %>
+                    				★★★★
+                				<% when 5 %>
+                    				★★★★★
+                			<% end %>
+					</div>
+				<% end %>
+			</div>
+			<hr>
+ 		<% end %>
+	<%= paginate @rentals %>
+	<% else %>
+		<b>There are no rentals containing the term(s) <%= params[:filterrific][:search_query] %> try another address. </b>
+ 	<% end %>
+</div>

@@ -1,0 +1,54 @@
+<%= form_for [@rental, @review], html: {multipart: true } do |f| %>
+  <% if @review.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@review.errors.count, "error") %> prohibited this review from being saved:</h2>
+
+      <ul>
+      <% @review.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.number_field :overall, placeholder: "Overall: 1 being poor and 5 being outstanding" %>
+  </div>
+
+  <div class="field">
+	  <!-- <table id="price_table">
+	    <tr>
+	      <th>1</th>
+	      <th>2</th>
+	      <th>3</th>
+	      <th>4</th>
+	      <th>5</th>
+	    </tr>
+	    <tr>
+	      <td>$0 - $750</td>
+	      <td>$750 - $1,000</td>
+	      <td>$1,000 - $1,250</td>
+	      <td>$1,250 - $1,500</td>
+	      <td>$2,000+</td>
+	    </tr>
+	  </table> -->
+	  <%= f.number_field :price, placeholder: "Price: 1 being inexpensive 5 being most expensive" %>
+  </div>
+  <div class="field">
+    <%= f.text_field :comment, placeholder: "Comment" %>
+  </div>
+  <div id="files">
+    <h3> Attach rental images</h3>
+      <!-- this is using html 5 magic to gather multiple images to pass to paperclip -->
+      <%= file_field_tag "pics[]", type: :file, multiple: true %>
+  </div>
+
+  <div >
+    <output id="list"> </output>
+  </div>
+  <br> <br>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
